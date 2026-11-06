@@ -73,26 +73,18 @@ export default function StandeePreview({
             )}
           </div>
 
-          {/* Google 5-Star Rating Pill */}
+          {/* Google 5-Star Rating (Stars Only - Timeless / Evergreen for Print) */}
           {showRating && (
-            <div className="my-3 px-3 py-1 rounded-full bg-[#f2f3ff] shadow-xs inline-flex items-center gap-2 transition-all whitespace-nowrap shrink-0 max-w-full">
-              <div className="flex items-center text-amber-500 shrink-0">
-                {"★★★★★".split("").map((_, i) => (
-                  <span
-                    key={i}
-                    className="material-symbols-outlined text-[15px] text-amber-500"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    star
-                  </span>
-                ))}
-              </div>
-              <span className="font-label-md text-label-md font-bold text-[#131b2e] whitespace-nowrap shrink-0">
-                {business?.rating || 4.8}&nbsp;★
-              </span>
-              <span className="font-body-sm text-body-sm text-[#464555] whitespace-nowrap shrink-0">
-                ({business?.totalReviews || 840}+ Reviews)
-              </span>
+            <div className="my-2.5 px-3 py-1 rounded-full bg-[#f2f3ff] shadow-xs inline-flex items-center gap-0.5 border border-[#bac3ff]/40">
+              {[...Array(5)].map((_, i) => (
+                <span
+                  key={i}
+                  className="material-symbols-outlined text-[18px] text-amber-500"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  star
+                </span>
+              ))}
             </div>
           )}
 

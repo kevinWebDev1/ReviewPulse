@@ -125,7 +125,7 @@ export default function QRStudioWorkspace({ business }) {
               {/* Toggles */}
               <div className="flex flex-col gap-2 pt-1">
                 {[
-                  { id: "rating", icon: "star", color: "text-[#885500]", title: "Google 5-Star Rating Pill", sub: 'Shows "4.8 ★ (840+ Reviews)" header', checked: showRating, set: setShowRating },
+                  { id: "rating", icon: "star", color: "text-[#885500]", title: "Google 5-Star Rating Pill", sub: "Shows 5-star Google rating header (stars only)", checked: showRating, set: setShowRating },
                   { id: "address", icon: "pin_drop", color: "text-[#3525cd]", title: "Physical Location Sub-address", sub: "Reassures diners they review correct branch", checked: showAddress, set: setShowAddress },
                   { id: "upi", icon: "contactless", color: "text-[#006c49]", title: "UPI / Camera Compatibility Pill", sub: "Guides diners using Paytm/PhonePe/GPay apps", checked: showUpi, set: setShowUpi }
                 ].map((item) => (
