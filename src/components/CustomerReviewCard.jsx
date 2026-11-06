@@ -118,12 +118,12 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
     <div className={isFullPage ? "w-full max-w-md mx-auto min-h-screen px-4 py-5 flex flex-col justify-between text-[#131b2e] bg-white" : "w-full max-w-md mx-auto bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col gap-3.5 text-[#131b2e]"}>
       <div className="flex flex-col gap-3.5">
         {/* 1. Header */}
-        <div className="flex items-center justify-between bg-[#f2f3ff] p-3 rounded-2xl border border-slate-100">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center bg-[#f2f3ff] p-3 rounded-2xl border border-slate-100">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="w-11 h-11 rounded-2xl bg-[#684000] flex items-center justify-center text-white shadow-xs shrink-0">
               <span className="material-symbols-outlined text-[24px]">local_fire_department</span>
             </div>
-            <div className="flex flex-col min-w-0">
+            <div className="flex flex-col min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
                 <span className="font-headline-sm text-headline-sm text-[#131b2e] font-bold tracking-tight truncate">
                   {business?.name || "The Spice Symphony"}
@@ -136,9 +136,6 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
                 <span>{business?.totalReviews || 846}+ Google Reviews</span>
               </div>
             </div>
-          </div>
-          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-xs shrink-0 border border-slate-100">
-            <span className="material-symbols-outlined text-[18px] text-[#3525cd]">storefront</span>
           </div>
         </div>
 
