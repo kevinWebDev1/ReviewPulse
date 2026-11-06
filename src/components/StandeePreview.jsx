@@ -75,22 +75,22 @@ export default function StandeePreview({
 
           {/* Google 5-Star Rating Pill */}
           {showRating && (
-            <div className="my-3 px-3 py-1 rounded-full bg-[#f2f3ff] shadow-xs flex items-center gap-2 transition-all">
-              <div className="flex items-center text-amber-500">
+            <div className="my-3 px-3 py-1 rounded-full bg-[#f2f3ff] shadow-xs inline-flex items-center gap-2 transition-all whitespace-nowrap shrink-0 max-w-full">
+              <div className="flex items-center text-amber-500 shrink-0">
                 {"★★★★★".split("").map((_, i) => (
                   <span
                     key={i}
-                    className="material-symbols-outlined text-[16px] text-amber-500"
+                    className="material-symbols-outlined text-[15px] text-amber-500"
                     style={{ fontVariationSettings: "'FILL' 1" }}
                   >
                     star
                   </span>
                 ))}
               </div>
-              <span className="font-label-md text-label-md font-bold text-[#131b2e]">
-                {business?.rating || 4.8} ★
+              <span className="font-label-md text-label-md font-bold text-[#131b2e] whitespace-nowrap shrink-0">
+                {business?.rating || 4.8}&nbsp;★
               </span>
-              <span className="font-body-sm text-body-sm text-[#464555]">
+              <span className="font-body-sm text-body-sm text-[#464555] whitespace-nowrap shrink-0">
                 ({business?.totalReviews || 840}+ Reviews)
               </span>
             </div>

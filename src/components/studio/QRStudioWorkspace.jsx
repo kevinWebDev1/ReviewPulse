@@ -6,9 +6,15 @@ import StandeePreview from "@/components/StandeePreview";
 export default function QRStudioWorkspace({ business }) {
   const [format, setFormat] = useState("acrylic"); // acrylic | tent | sticker
   const [accentColor, setAccentColor] = useState("#D9621E");
+
+  // Default state matching User Request img1:
+  // Google 5-Star Rating Pill: CHECKED
+  // Physical Location Sub-address: UNCHECKED
+  // UPI / Camera Compatibility Pill: UNCHECKED
   const [showRating, setShowRating] = useState(true);
-  const [showAddress, setShowAddress] = useState(true);
-  const [showUpi, setShowUpi] = useState(true);
+  const [showAddress, setShowAddress] = useState(false);
+  const [showUpi, setShowUpi] = useState(false);
+
   const [headline, setHeadline] = useState("Scan to Rate Us on Google");
   const [subtext, setSubtext] = useState("Takes only 15 seconds with AI assistance");
   const [zoom, setZoom] = useState(1.0);
@@ -30,7 +36,7 @@ export default function QRStudioWorkspace({ business }) {
   };
 
   const copyReviewUrl = () => {
-    const url = business?.googleReviewUrl || "https://search.google.com/local/writereview?placeid=ChIJ3Vw9r3m_mTkRGz5s4J9b1YI";
+    const url = business?.googleReviewUrl || "https://search.google.com/local/writereview?placeid=ChIJib0wJc_5njkRDfcs8tLulRA";
     navigator.clipboard.writeText(url).then(() => {
       triggerToast("Google Place Review link copied to clipboard!");
     });
@@ -62,26 +68,17 @@ export default function QRStudioWorkspace({ business }) {
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => {
-                      setFormat(item.id);
-                      triggerToast(`Switched format to ${item.label}`);
-                    }}
+                    onClick={() => { setFormat(item.id); triggerToast(`Switched format to ${item.label}`); }}
                     className={`p-3 rounded-xl text-left transition-all relative flex flex-col justify-between h-32 shadow-xs border ${
-                      format === item.id
-                        ? "bg-[#f2f3ff] border-[#4f46e5] ring-2 ring-[#4f46e5]/20"
-                        : "bg-white hover:bg-[#f2f3ff] border-slate-200/80"
+                      format === item.id ? "bg-[#f2f3ff] border-[#4f46e5] ring-2 ring-[#4f46e5]/20" : "bg-white hover:bg-[#f2f3ff] border-slate-200/80"
                     }`}
                   >
                     <div className="flex items-start justify-between">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        format === item.id ? "bg-[#4f46e5] text-white" : "bg-[#eaedff] text-[#464555]"
-                      }`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${format === item.id ? "bg-[#4f46e5] text-white" : "bg-[#eaedff] text-[#464555]"}`}>
                         <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
                       </div>
                       {item.popular && (
-                        <span className="px-1.5 py-0.5 rounded-full bg-[#ffddb8] text-[#2a1700] font-label-sm text-[10px] uppercase tracking-wide">
-                          Popular
-                        </span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-[#ffddb8] text-[#2a1700] font-label-sm text-[10px] uppercase tracking-wide">Popular</span>
                       )}
                     </div>
                     <div>
@@ -112,19 +109,14 @@ export default function QRStudioWorkspace({ business }) {
                     <button
                       key={c.hex}
                       type="button"
-                      onClick={() => {
-                        setAccentColor(c.hex);
-                        triggerToast(`Accent updated to ${c.name}`);
-                      }}
+                      onClick={() => { setAccentColor(c.hex); triggerToast(`Accent updated to ${c.name}`); }}
                       className={`w-7 h-7 rounded-full transition-transform flex items-center justify-center shadow-xs ${
                         accentColor === c.hex ? "scale-110 ring-2 ring-[#3525cd] ring-offset-2" : "hover:scale-105"
                       }`}
                       style={{ backgroundColor: c.hex }}
                       title={c.name}
                     >
-                      {accentColor === c.hex && (
-                        <span className="material-symbols-outlined text-white text-[14px]">check</span>
-                      )}
+                      {accentColor === c.hex && <span className="material-symbols-outlined text-white text-[14px]">check</span>}
                     </button>
                   ))}
                 </div>
@@ -132,53 +124,27 @@ export default function QRStudioWorkspace({ business }) {
 
               {/* Toggles */}
               <div className="flex flex-col gap-2 pt-1">
-                <label className="flex items-center justify-between p-3 rounded-lg bg-[#faf8ff] hover:bg-[#f2f3ff] cursor-pointer transition-colors border border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#885500] text-[20px]">star</span>
-                    <div>
-                      <div className="font-label-md text-label-md text-[#131b2e] font-medium">Google 5-Star Rating Pill</div>
-                      <div className="font-body-sm text-body-sm text-[#464555]">Shows &quot;4.8 ★ (840+ Reviews)&quot; header</div>
+                {[
+                  { id: "rating", icon: "star", color: "text-[#885500]", title: "Google 5-Star Rating Pill", sub: 'Shows "4.8 ★ (840+ Reviews)" header', checked: showRating, set: setShowRating },
+                  { id: "address", icon: "pin_drop", color: "text-[#3525cd]", title: "Physical Location Sub-address", sub: "Reassures diners they review correct branch", checked: showAddress, set: setShowAddress },
+                  { id: "upi", icon: "contactless", color: "text-[#006c49]", title: "UPI / Camera Compatibility Pill", sub: "Guides diners using Paytm/PhonePe/GPay apps", checked: showUpi, set: setShowUpi }
+                ].map((item) => (
+                  <label key={item.id} className="flex items-center justify-between p-3 rounded-lg bg-[#faf8ff] hover:bg-[#f2f3ff] cursor-pointer transition-colors border border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <span className={`material-symbols-outlined ${item.color} text-[20px]`}>{item.icon}</span>
+                      <div>
+                        <div className="font-label-md text-label-md text-[#131b2e] font-medium">{item.title}</div>
+                        <div className="font-body-sm text-body-sm text-[#464555]">{item.sub}</div>
+                      </div>
                     </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={showRating}
-                    onChange={(e) => setShowRating(e.target.checked)}
-                    className="w-5 h-5 accent-[#4f46e5] rounded cursor-pointer"
-                  />
-                </label>
-
-                <label className="flex items-center justify-between p-3 rounded-lg bg-[#faf8ff] hover:bg-[#f2f3ff] cursor-pointer transition-colors border border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#3525cd] text-[20px]">pin_drop</span>
-                    <div>
-                      <div className="font-label-md text-label-md text-[#131b2e] font-medium">Physical Location Sub-address</div>
-                      <div className="font-body-sm text-body-sm text-[#464555]">Reassures diners they review correct branch</div>
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={showAddress}
-                    onChange={(e) => setShowAddress(e.target.checked)}
-                    className="w-5 h-5 accent-[#4f46e5] rounded cursor-pointer"
-                  />
-                </label>
-
-                <label className="flex items-center justify-between p-3 rounded-lg bg-[#faf8ff] hover:bg-[#f2f3ff] cursor-pointer transition-colors border border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#006c49] text-[20px]">contactless</span>
-                    <div>
-                      <div className="font-label-md text-label-md text-[#131b2e] font-medium">UPI / Camera Compatibility Pill</div>
-                      <div className="font-body-sm text-body-sm text-[#464555]">Guides diners using Paytm/PhonePe/GPay apps</div>
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={showUpi}
-                    onChange={(e) => setShowUpi(e.target.checked)}
-                    className="w-5 h-5 accent-[#4f46e5] rounded cursor-pointer"
-                  />
-                </label>
+                    <input
+                      type="checkbox"
+                      checked={item.checked}
+                      onChange={(e) => item.set(e.target.checked)}
+                      className="w-5 h-5 accent-[#4f46e5] rounded cursor-pointer"
+                    />
+                  </label>
+                ))}
               </div>
             </div>
 
@@ -248,7 +214,7 @@ export default function QRStudioWorkspace({ business }) {
               <span className="font-label-sm text-label-sm text-[#131b2e] font-medium">True-to-Scale 4 x 6 Preview</span>
             </div>
 
-            {/* Live Standee Preview (Matching Image 3) */}
+            {/* Live Standee Preview */}
             <StandeePreview
               business={business}
               format={format}
@@ -302,8 +268,8 @@ export default function QRStudioWorkspace({ business }) {
               </div>
               <div className="min-w-0">
                 <div className="font-label-md text-label-md font-semibold text-[#131b2e]">Direct Review URL Resolution</div>
-                <div className="font-body-sm text-body-sm text-[#464555] truncate">
-                  {business?.googleReviewUrl || "https://search.google.com/local/writereview?placeid=ChIJ3Vw9r3m_mTkRGz5s4J9b1YI"}
+                <div className="font-body-sm text-body-sm text-[#464555] truncate font-mono text-[11px]">
+                  {business?.googleReviewUrl || "https://search.google.com/local/writereview?placeid=ChIJib0wJc_5njkRDfcs8tLulRA"}
                 </div>
               </div>
             </div>
@@ -329,4 +295,3 @@ export default function QRStudioWorkspace({ business }) {
     </div>
   );
 }
-
