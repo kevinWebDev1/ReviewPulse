@@ -75,15 +75,15 @@ export default function StandeePreview({
 
           {/* Google 5-Star Rating (Stars Only - Timeless / Evergreen for Print) */}
           {showRating && (
-            <div className="my-2.5 px-3 py-1 rounded-full bg-[#f2f3ff] shadow-xs inline-flex items-center gap-0.5 border border-[#bac3ff]/40">
+            <div className="my-2.5 px-3 py-1 rounded-full bg-[#f2f3ff] shadow-xs inline-flex items-center gap-1 border border-[#bac3ff]/40">
               {[...Array(5)].map((_, i) => (
-                <span
+                <svg
                   key={i}
-                  className="material-symbols-outlined text-[18px] text-amber-500"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
+                  className="w-4 h-4 text-amber-500 fill-amber-500 shrink-0"
+                  viewBox="0 0 24 24"
                 >
-                  star
-                </span>
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
               ))}
             </div>
           )}

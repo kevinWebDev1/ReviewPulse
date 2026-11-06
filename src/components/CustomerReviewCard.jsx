@@ -160,15 +160,26 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
                 key={star}
                 type="button"
                 onClick={() => handleRating(star)}
-                className="text-[#885500] hover:scale-115 active:scale-95 transition-transform focus:outline-none p-1"
+                className="hover:scale-115 active:scale-95 transition-transform focus:outline-none p-1 cursor-pointer"
                 title={`${star} Star`}
               >
-                <span
-                  className="material-symbols-outlined text-[36px] text-[#885500]"
-                  style={{ fontVariationSettings: rating >= star ? "'FILL' 1" : "'FILL' 0" }}
+                <svg
+                  className={`w-9 h-9 transition-colors ${
+                    rating >= star
+                      ? "text-amber-500 fill-amber-500 drop-shadow-xs"
+                      : "text-slate-300 fill-transparent hover:text-amber-300"
+                  }`}
+                  viewBox="0 0 24 24"
+                  fill={rating >= star ? "currentColor" : "none"}
+                  stroke="currentColor"
+                  strokeWidth={rating >= star ? "0" : "1.8"}
                 >
-                  star
-                </span>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                  />
+                </svg>
               </button>
             ))}
           </div>
