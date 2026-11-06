@@ -111,10 +111,13 @@ export default function StandeePreview({
                   Generating QR...
                 </div>
               )}
-              {/* Center Decorative Badge */}
+              {/* Center Decorative Badge matching Accent Theme */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-7 h-7 rounded-full bg-white shadow-sm flex items-center justify-center border-2 border-white">
-                  <div className="w-5 h-5 rounded-full bg-[#4f46e5] flex items-center justify-center text-white text-[10px] font-bold">
+                  <div
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold transition-colors shadow-xs"
+                    style={{ backgroundColor: accentColor }}
+                  >
                     ★
                   </div>
                 </div>
