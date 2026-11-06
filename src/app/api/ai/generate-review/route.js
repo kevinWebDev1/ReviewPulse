@@ -107,51 +107,100 @@ Return ONLY a raw JSON array of 3 objects with keys "id", "label", and "text" wi
 }
 
 function generateSmartFallbackReviews({ businessName, category, rating, selectedTags, userNotes }) {
+  const item = (userNotes || "").trim().replace(/[.,!]+$/, "");
   const tagsStr = selectedTags.slice(0, 3).join(" and ");
-  const noteSnippet = userNotes ? ` ${userNotes}.` : "";
 
   if (rating >= 4) {
-    return [
-      {
-        id: "short",
-        label: "Short & Punchy",
-        text: tagsStr
-          ? `Had a wonderful experience at ${businessName}! Loved the ${tagsStr}.${noteSnippet} 5 stars!`
-          : `Great experience at ${businessName}! Highly recommended for anyone looking for quality ${category.toLowerCase()}.${noteSnippet}`
-      },
-      {
-        id: "detailed",
-        label: "Detailed Experience",
-        text: tagsStr
-          ? `Visited ${businessName} recently and was thoroughly impressed. The ${tagsStr} were top-notch. Staff was very accommodating and courteous.${noteSnippet} Will definitely be coming back again.`
-          : `Really satisfied with the service and quality at ${businessName}. Everything was seamless, professional, and well-managed.${noteSnippet} A well-deserved 5-star rating!`
-      },
-      {
-        id: "conversational",
-        label: "Friendly & Warm",
-        text: tagsStr
-          ? `Bohot accha experience raha! Really liked the ${tagsStr}. Service was super prompt and team was very warm.${noteSnippet} Totally worth visiting!`
-          : `Super happy with the overall experience at ${businessName}. Friendly staff, quick turnaround, and great value.${noteSnippet} 10/10 recommended!`
-      }
-    ];
+    if (item && tagsStr) {
+      return [
+        {
+          id: "short",
+          label: "Short & Punchy",
+          text: `Loved the ${item} and ${tagsStr} at ${businessName}! Freshly prepared and delicious. 5 stars!`
+        },
+        {
+          id: "detailed",
+          label: "Detailed Experience",
+          text: `Visited ${businessName} recently and had a great time. Tried their ${item} — cooked fresh and full of flavor. The ${tagsStr} was spot on and staff was very polite. Highly recommended!`
+        },
+        {
+          id: "conversational",
+          label: "Friendly & Warm",
+          text: `Bohot badiya experience raha! Especially loved their ${item} aur sath me ${tagsStr}. Service fast thi aur ambiance bhi mast. Family ke sath zaroor try karein!`
+        }
+      ];
+    } else if (item) {
+      return [
+        {
+          id: "short",
+          label: "Short & Punchy",
+          text: `Really loved the ${item} at ${businessName}! Freshly made, delicious flavors, and prompt service. 5 stars!`
+        },
+        {
+          id: "detailed",
+          label: "Detailed Experience",
+          text: `Had a wonderful meal at ${businessName}. Tried their ${item} — prepared to perfection with great hospitality and quick turnaround. Definitely visiting again!`
+        },
+        {
+          id: "conversational",
+          label: "Friendly & Warm",
+          text: `Khaane me maza aa gaya, especially the ${item}! Portions generous the aur service super fast thi. Highly recommended in the area!`
+        }
+      ];
+    } else if (tagsStr) {
+      return [
+        {
+          id: "short",
+          label: "Short & Punchy",
+          text: `Had a wonderful experience at ${businessName}! Loved the ${tagsStr}. 5 stars!`
+        },
+        {
+          id: "detailed",
+          label: "Detailed Experience",
+          text: `Visited ${businessName} recently and was thoroughly impressed. The ${tagsStr} were top-notch. Staff was very accommodating and courteous. Will definitely be coming back again.`
+        },
+        {
+          id: "conversational",
+          label: "Friendly & Warm",
+          text: `Bohot accha experience raha! Really liked the ${tagsStr}. Service was super prompt and team was very warm. Totally worth visiting!`
+        }
+      ];
+    } else {
+      return [
+        {
+          id: "short",
+          label: "Short & Punchy",
+          text: `Great experience at ${businessName}! Quality service, great atmosphere, and courteous staff. 5 stars!`
+        },
+        {
+          id: "detailed",
+          label: "Detailed Experience",
+          text: `Really satisfied with the quality and hospitality at ${businessName}. Everything was seamless, professional, and well-managed. Highly recommended!`
+        },
+        {
+          id: "conversational",
+          label: "Friendly & Warm",
+          text: `Super happy with the overall experience at ${businessName}. Friendly staff, quick turnaround, and great value. 10/10 recommended!`
+        }
+      ];
+    }
   } else {
+    const feedbackSubject = item || tagsStr || "overall service";
     return [
       {
         id: "short",
         label: "Brief & Constructive",
-        text: tagsStr
-          ? `Decent experience at ${businessName}, but there is room for improvement in ${tagsStr}.${noteSnippet}`
-          : `Average experience at ${businessName}. A few areas need attention.${noteSnippet}`
+        text: `Decent visit to ${businessName}, but there is room for improvement in ${feedbackSubject}.`
       },
       {
         id: "detailed",
         label: "Detailed Constructive Feedback",
-        text: `Visited ${businessName} recently. While the team was trying their best, the experience could have been better, especially regarding ${tagsStr || "overall wait time and service"}.${noteSnippet} Hope management looks into this.`
+        text: `Visited ${businessName} recently. The experience could have been better regarding ${feedbackSubject}. Hope management looks into this.`
       },
       {
         id: "conversational",
         label: "Neutral Observation",
-        text: `Experience was okay at ${businessName}. Expecting better service and consistency next time.${noteSnippet}`
+        text: `Experience was okay at ${businessName}. Expecting better service and consistency next time.`
       }
     ];
   }

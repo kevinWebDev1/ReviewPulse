@@ -8,6 +8,7 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
   const [rating, setRating] = useState(5);
   const [selectedTags, setSelectedTags] = useState([]);
   const [userNotes, setUserNotes] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const [activeTone, setActiveTone] = useState("PUNCHY");
   const [copied, setCopied] = useState(false);
   const [btnText, setBtnText] = useState("Copy Review & Open Google Maps");
@@ -25,6 +26,15 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
     setSelectedTags(availableTags.slice(0, 2));
   }, [business?.slug]);
 
+  // Debounced AI call on custom note input
+  useEffect(() => {
+    if (rating < 4 || !userNotes.trim()) return;
+    const timer = setTimeout(() => {
+      fetchSuggestions(rating, selectedTags, userNotes);
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [userNotes]);
+
   const toggleTag = (tag) => {
     const updated = selectedTags.includes(tag)
       ? selectedTags.filter((t) => t !== tag)
@@ -40,14 +50,11 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
     }
   };
 
-  const handleNotesChange = (val) => {
-    setUserNotes(val);
-    fetchSuggestions(rating, selectedTags, val);
-  };
-
   const fetchSuggestions = async (rateVal, tags, notes) => {
+    setIsGenerating(true);
+    const minWait = new Promise((resolve) => setTimeout(resolve, 350));
     try {
-      const res = await fetch("/api/ai/generate-review", {
+      const resPromise = fetch("/api/ai/generate-review", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -58,6 +65,7 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
           userNotes: notes || ""
         })
       });
+      const [res] = await Promise.all([resPromise, minWait]);
       const data = await res.json();
       if (data.success && data.suggestions?.length >= 3) {
         setSuggestions({
@@ -66,7 +74,9 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
           CASUAL: data.suggestions[2].text
         });
       }
-    } catch {}
+    } catch {} finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleCopyAndOpenGoogle = async () => {
@@ -204,12 +214,19 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
             <div className="flex flex-col gap-1">
               <label className="font-label-sm text-label-sm text-[#464555] font-medium flex items-center justify-between">
                 <span>Had a specific dish or experience? (Optional)</span>
-                <span className="text-[11px] text-[#3525cd]">AI will include it</span>
+                {isGenerating ? (
+                  <span className="text-[11px] text-[#3525cd] font-semibold flex items-center gap-1 animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-[#3525cd] animate-ping" />
+                    AI crafting...
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-[#3525cd]">AI will include it</span>
+                )}
               </label>
               <input
                 type="text"
                 value={userNotes}
-                onChange={(e) => handleNotesChange(e.target.value)}
+                onChange={(e) => setUserNotes(e.target.value)}
                 placeholder="e.g. Farmhouse Pizza, Cold Coffee, Lawn Seating..."
                 className="w-full h-10 px-3 rounded-xl bg-white border border-slate-200 text-[#131b2e] font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-[#3525cd] shadow-xs"
               />
@@ -219,10 +236,14 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
             <div className="bg-[#f2f3ff] p-3.5 rounded-2xl flex flex-col gap-2.5 border border-slate-100">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-[#3525cd] font-label-sm text-label-sm font-bold">
-                  <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-                  <span>AI Review Generator</span>
+                  <span className={`material-symbols-outlined text-[16px] ${isGenerating ? "animate-spin text-amber-600" : ""}`}>
+                    {isGenerating ? "progress_activity" : "auto_awesome"}
+                  </span>
+                  <span>{isGenerating ? "Gemini AI is writing..." : "AI Review Generator"}</span>
                 </div>
-                <span className="font-label-sm text-label-sm text-[#464555]">Tap tone to switch</span>
+                <span className="font-label-sm text-label-sm text-[#464555]">
+                  {isGenerating ? "Generating..." : "Tap tone to switch"}
+                </span>
               </div>
 
               {/* Tone Switcher */}
@@ -242,20 +263,31 @@ export default function CustomerReviewCard({ business, isFullPage = false }) {
               </div>
 
               {/* Review Text Preview / Edit */}
-              <div className="bg-white p-3 rounded-xl shadow-xs flex flex-col gap-2 border border-slate-100">
-                <textarea
-                  rows={3}
-                  value={currentText}
-                  onChange={(e) => setSuggestions((prev) => ({ ...prev, [activeTone]: e.target.value }))}
-                  className="w-full font-body-md text-body-sm text-[#131b2e] italic leading-relaxed border-none focus:outline-none resize-none bg-transparent"
-                />
-                <div className="flex items-center justify-between font-label-sm text-label-sm text-[#464555] pt-1 border-t border-slate-100">
-                  <span className="flex items-center gap-1 text-[#006c49] font-medium">
-                    <span className="material-symbols-outlined text-[14px]">check_circle</span>
-                    <span>Tap text to edit • Optimized for SEO</span>
-                  </span>
-                  <span>{wordCount} words</span>
-                </div>
+              <div className="bg-white p-3 rounded-xl shadow-xs flex flex-col gap-2 border border-slate-100 relative min-h-[96px] justify-center">
+                {isGenerating ? (
+                  <div className="py-4 flex flex-col items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-[#3525cd] border-t-transparent rounded-full animate-spin" />
+                    <span className="font-body-sm text-[12px] text-[#464555] animate-pulse">
+                      Tailoring review for &ldquo;{userNotes}&rdquo;...
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <textarea
+                      rows={3}
+                      value={currentText}
+                      onChange={(e) => setSuggestions((prev) => ({ ...prev, [activeTone]: e.target.value }))}
+                      className="w-full font-body-md text-body-sm text-[#131b2e] italic leading-relaxed border-none focus:outline-none resize-none bg-transparent"
+                    />
+                    <div className="flex items-center justify-between font-label-sm text-label-sm text-[#464555] pt-1 border-t border-slate-100">
+                      <span className="flex items-center gap-1 text-[#006c49] font-medium">
+                        <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                        <span>Tap text to edit • Optimized for SEO</span>
+                      </span>
+                      <span>{wordCount} words</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
